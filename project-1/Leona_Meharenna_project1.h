@@ -4,8 +4,8 @@
 #include <type_traits>
 
 
-#ifndef FIRSTNAME_LASTNAME_PROJECT1
-#define FIRSTNAME_LASTNAME_PROJECT1
+#ifndef LEONA_MEHARENNA_PROJECT1_H
+#define LEONA_MEHARENNA_PROJECT1
 
 using namespace std;
 
@@ -13,14 +13,22 @@ using namespace std;
 
 /*** Helper Functions ***/
 unsigned int get_rand_index(unsigned int len) {
-    std::srand(std::time({}));
+    // std::srand(std::time({}));
     return static_cast<unsigned int>(std::rand() % len);
 }
 
 
 /*** STUDENT HELPER FUNCTIONS HERE ***/
 
-
+void swap(int &a, int &b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+template<typename T>
+int partition(vector<T> &list, int low, int high, bool descending);
+template<typename T>
+void merge(vector<T> &left, vector<T> &right, vector<T> &list, bool descending);
 
 /*** END STUDENT HELPER FUNCTIONS ***/
 
@@ -50,7 +58,7 @@ void insertion_sort(vector<T> &list, bool descending = false);
 
 /* Quick Sort */
 template<typename T>
-vector<T>& quick_partition(vector<T> &list, bool descending = false);
+vector<T>& quick_partition(vector<T> &list, int low, int high, bool descendingO);
 
 template<typename T>
 void quicksort(vector<T> &list, bool descending = false);

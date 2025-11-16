@@ -11,6 +11,7 @@ void print_list(vector<T>& list) {
     }
     std::cout << "]\n";
 }
+template void print_list<int>(std::vector<int>&);
 
 
 /* Generate shuffled list of integers from 0 to len-1 */
@@ -69,8 +70,8 @@ vector<int> gen_ascending_list(unsigned int len) {
 
 
 /* Generates an ascending list with 3 random swaps */
-vector<int> gen_asending_3swap_list(unsigned int len) {
-    vector<int> int_list = gen_asending_list(len);
+vector<int> gen_ascending_3swap_list(unsigned int len) {
+    vector<int> int_list = gen_ascending_list(len);
     srand(time({}));
     for(int i = 0; i < 3; i++) {
         unsigned int swap_index1 = static_cast<unsigned int>( rand() % len );
@@ -80,6 +81,7 @@ vector<int> gen_asending_3swap_list(unsigned int len) {
         int_list[swap_index1] = int_list[swap_index2];
         int_list[swap_index2] = temp;
     }
+    return int_list;
 }
 
 /* Genarates a list of all equal entries of length len */
