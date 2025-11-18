@@ -2,11 +2,13 @@
 #include <limits.h>
 #include <random>
 #include <iostream>
+#include<queue>
 
 // be sure to change FIRSTNAME and LASTNAME with your own first and last name
-#include "Firstname_Lastname_project2.h"
+#include "Leona_Meharenna_project2.h"
 
 using namespace std;
+
 
 /****************
  * INSTRUCTIONS *
@@ -38,8 +40,8 @@ using namespace std;
 
 /*** GROUP PROJECT ***/
 // Please list ALL of your other group members as comments below.
-//   Member 1
-//   Member 2
+//   Leona Meharenna
+//   Sreten Kljaic
 
 
 
@@ -98,7 +100,26 @@ vector<unsigned int> birthday_attack_1(function<unsigned short(unsigned int)> ha
     // signatures match the `test_hash` function signature.
     
     // Your code here!
+    for (size_t i = 0; i < 2; ++i ) {
+        unordered_map<unsigned short, unsigned int> numbers;
+
+        for (size_t j = 0; j < 350; ++j) {
+            unsigned int num = sample_int();
+            unsigned short hash = hash_function(num);
+
+            if (numbers.find(hash) != numbers.end()) {
+                return {numbers[hash], num};
+            }
+
+            numbers[hash] = num;
+        }
+
+    }
+
+
+    return {};
 }
+
 
 
 
@@ -183,6 +204,55 @@ vector<unsigned int> birthday_attack_2(function<unsigned short(unsigned int)> ha
 
 vector<int> topological_sort(int n, vector<Edge> edges) {
     // Your code here!
+
+// Compute the in-degree (number of incoming edges) for every vertex.
+// Push all nodes with in-degree = 0 into a queue.
+// While the queue isn’t empty:
+// Pop a node u from the queue → add it to the result list.
+// For each neighbor v of u: reduce v’s in-degree by 1.
+// If v’s in-degree becomes 0 → push it into the queue.
+// If you processed all nodes, the result list is your topological order.
+// If not → the graph has a cycle (so topological sort not possible).
+
+    //build adjacency list
+    vector<vector<int>> adj(n);
+    vector<int> indegree(n, 0);
+    for (Edge e : edges){
+        adj[e.from].push_back(e.to);
+        indegree[e.to]++;
+    }
+ 
+    queue<int> q;
+    for (int v = 0; v < n; v++) {
+        if (indegree[v] == 0){
+            q.push(v);
+        }
+    }
+
+    vector<int> topo_sort;
+
+    while (!q.empty()){
+        int v = q.front(); q.pop();
+        topo_sort.push_back(v);
+        //for every edge in the adjacency li
+        for (int e : adj[v]){
+            //reduce indegree by 1 since it's been popped off the queue
+            indegree[e]--;
+            if (indegree[e] == 0){
+                q.push(e);
+            }
+        }
+
+
+
+    }
+
+    if ((int)topo_sort.size() == n){
+        return topo_sort;
+    }
+    cout << "cycle detected";
+    return {}; 
+
 }
 
 
@@ -214,6 +284,26 @@ vector<int> topological_sort(int n, vector<Edge> edges) {
  *
  */
 vector<int> dag_single_source(int n, vector<Edge> edges, int source) {
+    vector<vector<pair<int, int>>> adj(n);
+    for (Edge e : edges){
+        adj[e.from].push_back({e.to, e.weight});
+    }
+    
+    vector<int> dist(n, INT_MAX);
+     
+    vector<int> topo = topological_sort(n, edges);
+    dist[source] = 0;
+
+    for (int i : topo){
+        if (dist[i] != INT_MAX){
+            for (auto [v, w] : adj[i]){
+                if (dist[i] + w < dist[v]){
+                    dist[v] = dist[i] + w;
+                }
+            }
+        }
+    }
+    return dist;
 }
 
 
@@ -249,6 +339,44 @@ vector<Node> dijkstras_algorithm(int n, vector<Edge> edges, int source) {
     // Your code here!
     // Note: see the LeetCode from in-class for the problem "Cheapest Flights
     // K stops" to see how you can create a priority_queue with the Node struct.
+
+    vector<Node> nodes;
+    int infinity = numeric_limits<int>::max();
+
+    vector<vector<pair<int,int>>> adj(n);
+    for(int i = 0; i < n; i++) {
+        Node no = Node(i, infinity, -1);
+        nodes.push_back(no);
+            // graph.push_back( Node(i, infinity, infinity, {}) );
+    }
+
+    for (Edge e: edges){
+        adj[e.from].push_back({e.to, e.weight});
+    }
+
+    nodes[source].path_cost = 0;
+
+    // priority_queue< T, Container, Compare >
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+    pq.push({0, source});
+
+    while (!pq.empty()){
+
+        auto [dist_u, u] = pq.top();
+        pq.pop();
+
+        for (auto [v, w] : adj[u]){
+            if (nodes[u].path_cost + w < nodes[v].path_cost) {
+            nodes[v].path_cost = nodes[u].path_cost + w;
+            nodes[v].pred = u;
+            pq.push({nodes[v].path_cost, v});
+        }
+        }
+    }
+    
+    return nodes;
+    
+
 }
 
 
@@ -367,5 +495,36 @@ vector<GridNode> a_star_algorithm(
 }
 
 int main() {
+    // vector<unsigned int> out = birthday_attack_1(test_hash); 
+    // for (int i = 0; i < out.size(); i++){
+    //     cout << out[i] << endl;
+    // }
+
+     int n = 5; // vertices 0..4
+    vector<Edge> edges = {
+        {0, 1, 3},
+        {0, 2, 2},
+        {1, 3, 4},
+        {2, 3, 1},
+        {2, 4, 5},
+        {3, 4, 2}
+    };
+
+    int source = 2;
+
+    vector<int> dist = dag_single_source(n, edges, source);
+    vector<int> topo = topological_sort(n, edges);
+    cout <<" topo: ";
+    for (int i = 0; i < topo.size(); i++){
+        cout << topo[i] << " ";
+    }
+    cout << "Shortest distances from source " << source << ":\n";
+    for (int i = 0; i < n; i++) {
+        if (dist[i] == INT_MAX) {
+            cout << i << ": INF\n";  // unreachable
+        } else {
+            cout << i << ": " << dist[i] << "\n";
+        }
+    }
     return 0;
 }

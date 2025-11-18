@@ -1,7 +1,7 @@
 
 // be sure to change FIRSTNAME and LASTNAME with your own first and last name
-#ifndef FIRSTNAME_LASTNAME_PROJECT2
-#define FIRSTNAME_LASTNAME_PROJECT2
+#ifndef LEONA_MEHARENNA_PROJECT2
+#define LEONA_MEHARENNA_PROJECT2
 
 #include <functional>
 
@@ -23,6 +23,8 @@ struct Node {
     int id;
     int path_cost;
     int pred;
+     Node(int id_, int path_cost_, int pred_)
+        : id(id_), path_cost(path_cost_), pred(pred_) {}
     bool operator> (const Node&) const;
     bool operator>=(const Node&) const;
     bool operator==(const Node&) const;
